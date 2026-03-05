@@ -26,7 +26,7 @@
                 <p>Mostrando {{ logs|length }} registros de {{ total_logs }} totales</p>
             </div>
             <div class="header-actions">
-                <a href="{{ url_for('export_all_logs') }}" class="export-btn">📥 Exportar todos los logs</a>
+                <a href="{{ url_for('export_all_logs') }}" class="btn-go">📥 Exportar todos los logs</a>
             </div>
         </div>
         
@@ -70,6 +70,7 @@
                 </div>
                 <div class="filter-group">
                     <button type="submit" class="btn-go">Aplicar filtros</button>
+                    <a href="{{ url_for('all_logs') }}" class="btn-nav">Limpiar filtros</a>
                 </div>
             </form>
         </div>
@@ -111,7 +112,7 @@
                             {% endif %}
                         </td>
                         <td>{{ log.error or '-' }}</td>
-                        <td class="user-agent-cell" title="{{ log.user_agent }}">{{ log.user_agent }}</td>
+                        <td class="user-agent-cell" title="{{ log.user_agent }}">{{ log.user_agent|truncate(50) }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -126,15 +127,15 @@
         
         <div class="pagination">
             {% if page > 1 %}
-            <a href="?page=1&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">« Primera</a>
-            <a href="?page={{ page-1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">‹ Anterior</a>
+            <a href="?page=1&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">« Primera</a>
+            <a href="?page={{ page-1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">‹ Anterior</a>
             {% endif %}
             
             <span class="current">Página {{ page }} de {{ total_pages }}</span>
             
             {% if page < total_pages %}
-            <a href="?page={{ page+1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">Siguiente ›</a>
-            <a href="?page={{ total_pages }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">Última »</a>
+            <a href="?page={{ page+1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">Siguiente ›</a>
+            <a href="?page={{ total_pages }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">Última »</a>
             {% endif %}
         </div>
     </div>
