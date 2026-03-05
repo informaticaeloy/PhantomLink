@@ -14,7 +14,7 @@ It allows users to browse external websites through an internal proxy
 while collecting diagnostic information and logs.
 
 ------------------------------------------------------------------------
-<img width="1024" height="1024" alt="PhantomLink_logo" src="https://github.com/user-attachments/assets/130347ab-8e86-418d-8610-3d37fa8b1d6d" />
+<img width="400" height="400" alt="PhantomLink_logo" src="https://github.com/user-attachments/assets/130347ab-8e86-418d-8610-3d37fa8b1d6d" />
 
 # Browseling
 
