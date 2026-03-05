@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos los Logs - Proxy Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <a href="{{ url_for('index') }}" class="btn-nav">← Volver al Navegador</a>
+            <a href="{{ url_for('admin_panel') }}" class="btn-nav">⚙️ Admin</a>
+        </div>
+        
+        <div class="toolbar-right">
+            <span class="user-info">👤 {{ username }} (Admin)</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">🔒 Cerrar sesión</a>
+        </div>
+    </div>
+    
+    <div class="logs-container">
+        <div class="logs-header">
+            <div class="header-title">
+                <h1>📋 Todos los Logs de Navegación</h1>
+                <p>Mostrando {{ logs|length }} registros de {{ total_logs }} totales</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('export_all_logs') }}" class="export-btn">📥 Exportar todos los logs</a>
+            </div>
+        </div>
+        
+        <div class="logs-filters">
+            <form method="GET" class="filters-form">
+                <div class="filter-group">
+                    <label for="user">Usuario:</label>
+                    <select id="user" name="user">
+                        <option value="">Todos los usuarios</option>
+                        {% for user in users %}
+                        <option value="{{ user }}" {% if request.args.get('user') == user %}selected{% endif %}>{{ user }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="status">Estado:</label>
+                    <select id="status" name="status">
+                        <option value="">Todos los estados</option>
+                        <option value="success" {% if request.args.get('status') == 'success' %}selected{% endif %}>Éxito</option>
+                        <option value="error" {% if request.args.get('status') == 'error' %}selected{% endif %}>Error</option>
+                        <option value="blocked" {% if request.args.get('status') == 'blocked' %}selected{% endif %}>Bloqueado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="from_date">Desde:</label>
+                    <input type="date" id="from_date" name="from_date" value="{{ request.args.get('from_date', '') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="to_date">Hasta:</label>
+                    <input type="date" id="to_date" name="to_date" value="{{ request.args.get('to_date', '') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="limit">Mostrar:</label>
+                    <select id="limit" name="limit">
+                        <option value="50" {% if request.args.get('limit', '100') == '50' %}selected{% endif %}>50 registros</option>
+                        <option value="100" {% if request.args.get('limit', '100') == '100' %}selected{% endif %}>100 registros</option>
+                        <option value="250" {% if request.args.get('limit', '100') == '250' %}selected{% endif %}>250 registros</option>
+                        <option value="500" {% if request.args.get('limit', '100') == '500' %}selected{% endif %}>500 registros</option>
+                        <option value="1000" {% if request.args.get('limit', '100') == '1000' %}selected{% endif %}>1000 registros</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button type="submit" class="btn-go">Aplicar filtros</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="logs-table-container">
+            {% if logs %}
+            <table class="logs-table">
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Usuario</th>
+                        <th>URL</th>
+                        <th>IP</th>
+                        <th>Estado</th>
+                        <th>Error</th>
+                        <th>User Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp[:19].replace('T', ' ') }}</td>
+                        <td>
+                            <span class="user-badge {% if log.username == 'admin' %}user-admin{% else %}user-user{% endif %}">
+                                {{ log.username }}
+                            </span>
+                        </td>
+                        <td class="url-cell">
+                            <a href="{{ url_for('proxy', url=log.url) }}" target="_blank" title="{{ log.url }}">{{ log.url }}</a>
+                        </td>
+                        <td>{{ log.ip or 'N/A' }}</td>
+                        <td>
+                            {% if log.status == 'success' %}
+                            <span class="status-success">✓ Éxito</span>
+                            {% elif log.status == 'blocked' %}
+                            <span class="status-blocked">⚠ Bloqueado</span>
+                            {% else %}
+                            <span class="status-error">✗ Error</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.error or '-' }}</td>
+                        <td class="user-agent-cell" title="{{ log.user_agent }}">{{ log.user_agent }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-logs">
+                <h3>📭 No hay logs disponibles</h3>
+                <p>No se encontraron registros con los filtros aplicados.</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="?page=1&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">« Primera</a>
+            <a href="?page={{ page-1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">‹ Anterior</a>
+            {% endif %}
+            
+            <span class="current">Página {{ page }} de {{ total_pages }}</span>
+            
+            {% if page < total_pages %}
+            <a href="?page={{ page+1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">Siguiente ›</a>
+            <a href="?page={{ total_pages }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">Última »</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

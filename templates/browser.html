@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Web - Navegador</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* Estilos para la toolbar y botones */
+        .toolbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+        }
+
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .url-bar {
+            flex: 1;
+            display: flex;
+            gap: 5px;
+            max-width: 600px;
+            margin: 0 20px;
+        }
+
+        .url-bar input {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .url-bar input:focus {
+            outline: 2px solid #3498db;
+        }
+
+        .btn-nav, .btn-go, .btn-home, .btn-admin, .btn-urls, .btn-logs, .btn-logout {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-nav {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-go {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-go:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        .btn-home {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-home:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-admin {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-urls {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-urls:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        .btn-logs {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-logs:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            color: white;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Estilos específicos para la página de inicio */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 60px);
+            margin-top: 60px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            border: 3px solid #f39c12;
+        }
+
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .welcome-card h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .welcome-card p {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .feature h3 {
+            color: #3498db;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .welcome-tip {
+            background: #fff3cd;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .welcome-tip strong {
+            color: #856404;
+        }
+
+        .example-urls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .example-url {
+            background: #e9ecef;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .example-url:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .arrow-hint {
+            position: relative;
+            margin-top: 30px;
+        }
+
+        .arrow-hint svg {
+            width: 50px;
+            height: 50px;
+            color: #f39c12;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        .arrow-hint span {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f39c12;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* Estilos para el iframe */
+
+
+        body.navegando #welcome-container {
+            display: none;
+        }
+
+        body.navegando #browser-frame {
+            display: block;
+        }
+
+        #info-bar {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: #2c3e50;
+            color: white;
+            padding: 8px 20px;
+            z-index: 999;
+            font-size: 13px;
+            gap: 15px;
+            align-items: center;
+        }
+
+        body.navegando #info-bar {
+            display: flex;
+        }
+
+        #current-url-display {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f39c12;
+        }
+
+        .separator {
+            color: #666;
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 10px;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1500;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button id="back" class="btn-nav" onclick="historyBack()" title="Atrás" disabled>←</button>
+            <button id="forward" class="btn-nav" onclick="historyForward()" title="Adelante" disabled>→</button>
+            <button class="btn-nav" onclick="reloadPage()" title="Recargar" disabled>↻</button>
+        </div>
+
+        <div class="url-bar">
+            <input type="text" id="url-input" placeholder="Introduce URL (ej: https://google.com)" value="https://google.com">
+            <button class="btn-go" onclick="navigateToUrl()">Ir</button>
+            <button class="btn-home" onclick="homePage()" title="Inicio">🏠</button>
+        </div>
+
+        <div class="toolbar-right">
+            <span class="user-info">👤 admin</span>
+
+            <a href="/admin/users" class="btn-admin" title="Gestión de Usuarios">👥 Usuarios</a>
+            <a href="/admin/urls" class="btn-urls" title="Gestión de URLs">🌐 URLs</a>
+            <a href="/admin/logs" class="btn-logs" title="Ver logs">📋 Logs</a>
+
+            <button id="logout" class="btn-logout" onclick="logout()" title="Cerrar sesión">🔒 Salir</button>
+        </div>
+    </div>
+
+    <div class="info-bar" id="info-bar">
+        <span id="current-url-display"></span>
+        <span class="separator">|</span>
+        <span id="ip-info">IP: <span id="ip-address">-</span></span>
+        <span class="separator">|</span>
+        <span id="ping-info">Ping: <span id="ping-value">-</span> ms</span>
+    </div>
+
+    <div class="welcome-container" id="welcome-container">
+        <div class="welcome-card">
+            <div class="welcome-icon">🌐</div>
+            <h1>Bienvenido al Proxy Web</h1>
+            <p>Navega de forma segura a través de nuestro servidor proxy</p>
+
+            <div class="welcome-features">
+                <div class="feature">
+                    <h3>🔒 Seguro</h3>
+                    <p>Todas las conexiones pasan por nuestro servidor</p>
+                </div>
+                <div class="feature">
+                    <h3>📊 Control</h3>
+                    <p>Los administradores pueden ver los logs de navegación</p>
+                </div>
+                <div class="feature">
+                    <h3>🚀 Rápido</h3>
+                    <p>Navegación optimizada con información en tiempo real</p>
+                </div>
+            </div>
+
+            <div class="welcome-tip">
+                <strong>💡 Para empezar a navegar:</strong> Escribe una URL en la barra de direcciones de arriba y haz clic en "Ir" o pulsa Enter.
+            </div>
+
+            <div class="example-urls">
+                <a href="#" onclick="setExampleUrl('https://google.com')" class="example-url">google.com</a>
+                <a href="#" onclick="setExampleUrl('https://github.com')" class="example-url">github.com</a>
+                <a href="#" onclick="setExampleUrl('https://stackoverflow.com')" class="example-url">stackoverflow.com</a>
+                <a href="#" onclick="setExampleUrl('https://wikipedia.org')" class="example-url">wikipedia.org</a>
+                <a href="#" onclick="setExampleUrl('https://python.org')" class="example-url">python.org</a>
+            </div>
+
+            <div class="arrow-hint">
+                <span>¡Empieza aquí!</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <span>Cargando...</span>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+
+    <iframe
+        name="browser-frame"
+        id="browser-frame"
+        src=""
+        style="
+            width:100%;
+            height:calc(100vh - 60px);
+            border:none;
+            overflow:auto;
+        ">
+    </iframe>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Elementos del DOM
+    const frame = document.getElementById('browser-frame');
+    const input = document.getElementById('url-input');
+    const loading = document.getElementById('loading');
+    const errorMsg = document.getElementById('error-message');
+    const currentUrlDisplay = document.getElementById('current-url-display');
+    const ipAddress = document.getElementById('ip-address');
+    const pingValue = document.getElementById('ping-value');
+    const backBtn = document.getElementById('back');
+    const forwardBtn = document.getElementById('forward');
+    const reloadBtn = document.querySelector('.btn-nav[onclick="reloadPage()"]');
+
+    // Variables de historial
+    let historyStack = [];
+    let historyIndex = -1;
+    let updateInterval = null;
+
+    // Mostrar navegador
+    function showBrowser() {
+        document.body.classList.add('navegando');
+        backBtn.disabled = historyIndex <= 0;
+        forwardBtn.disabled = historyIndex >= historyStack.length - 1;
+        reloadBtn.disabled = historyIndex < 0;
+    }
+
+    // Mostrar pantalla de bienvenida
+    function showWelcome() {
+        document.body.classList.remove('navegando');
+
+        frame.src = 'about:blank';
+        frame.removeAttribute('srcdoc');
+        input.value = '';
+        currentUrlDisplay.textContent = '';
+        ipAddress.textContent = '-';
+        pingValue.textContent = '-';
+        historyStack = [];
+        historyIndex = -1;
+
+        backBtn.disabled = true;
+        forwardBtn.disabled = true;
+        reloadBtn.disabled = true;
+
+        loading.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+    }
+
+    // Actualizar info de red (IP/Ping)
+    async function updateNetworkInfo(url) {
+        if (!url) return;
+        try {
+            const response = await fetch('/api/network-info?url=' + encodeURIComponent(url));
+            const data = await response.json();
+            ipAddress.textContent = data.ip || '-';
+            pingValue.textContent = data.ping || '-';
+        } catch(e) {
+            ipAddress.textContent = '-';
+            pingValue.textContent = '-';
+            console.log('Error obteniendo info de red:', e);
+        }
+    }
+
+    // Navegar a URL
+    window.navigateToUrl = function() {
+        let url = input.value.trim();
+        if (!url) return;
+
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+
+        loading.style.display = 'block';
+        errorMsg.style.display = 'none';
+
+        try {
+            new URL(url); // valida URL
+            const proxyUrl = '/proxy/?url=' + encodeURIComponent(url);
+            frame.src = proxyUrl;
+
+            // Gestionar historial
+            if (historyIndex < historyStack.length - 1) {
+                historyStack = historyStack.slice(0, historyIndex + 1);
+            }
+            historyStack.push(proxyUrl);
+            historyIndex++;
+
+            showBrowser();
+        } catch(e) {
+            errorMsg.textContent = 'URL inválida: ' + url;
+            errorMsg.style.display = 'block';
+            loading.style.display = 'none';
+            setTimeout(() => { errorMsg.style.display = 'none'; }, 5000);
+        }
+    };
+
+    // Evento Enter en input
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') navigateToUrl();
+    });
+
+    // Historial: back / forward / reload
+    window.historyBack = function() {
+        if (historyIndex > 0) {
+            historyIndex--;
+            frame.src = historyStack[historyIndex];
+            showBrowser();
+        }
+    };
+
+    window.historyForward = function() {
+        if (historyIndex < historyStack.length - 1) {
+            historyIndex++;
+            frame.src = historyStack[historyIndex];
+            showBrowser();
+        }
+    };
+
+    window.reloadPage = function() {
+        if (historyIndex >= 0) {
+            frame.src = historyStack[historyIndex];
+            showBrowser();
+        }
+    };
+
+    // Inicio
+    window.homePage = showWelcome;
+
+    // Cerrar sesión
+    const logoutBtn = document.querySelector('.btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            window.location.href = '/logout';
+        });
+    }
+
+    // Actualizar info de red al cargar iframe
+    frame.addEventListener('load', function() {
+        loading.style.display = 'none';
+        try {
+            const frameUrl = frame.contentWindow.location.href;
+            if (frameUrl && frameUrl !== 'about:blank') {
+                let urlMatch = frameUrl.match(/\/proxy\/\?url=([^&]+)/);
+                if (urlMatch && urlMatch[1]) {
+                    const decodedUrl = decodeURIComponent(urlMatch[1]);
+                    input.value = decodedUrl;
+                    currentUrlDisplay.textContent = decodedUrl;
+                    updateNetworkInfo(decodedUrl);
+
+                    if (updateInterval) clearInterval(updateInterval);
+                    updateInterval = setInterval(() => updateNetworkInfo(decodedUrl), 30000);
+                }
+            }
+        } catch(e) {
+            console.log('No se puede acceder al iframe');
+        }
+
+        // Actualizar botones back/forward
+        backBtn.disabled = historyIndex <= 0;
+        forwardBtn.disabled = historyIndex >= historyStack.length - 1;
+    });
+
+    // Inicializar en bienvenida
+    showWelcome();
+});
+</script>
+
+
+</body>
+</html>

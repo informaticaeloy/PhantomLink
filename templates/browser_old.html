@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Web - Navegador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button id="back" class="btn-nav" onclick="historyBack()" title="Atrás">←</button>
+            <button id="forward" class="btn-nav" onclick="historyForward()" title="Adelante">→</button>
+            <button class="btn-nav" onclick="reloadPage()" title="Recargar">↻</button>
+        </div>
+
+        <div class="url-bar">
+            <input type="text" id="url-input" placeholder="Introduce URL (ej: https://google.com)" value="https://www.google.com">
+            <button class="btn-go" onclick="navigateToUrl()">Ir</button>
+            <button class="btn-home" onclick="homePage()" title="Inicio">🏠</button>
+        </div>
+
+        <div class="toolbar-right">
+            <span class="user-info">👤 {{ username }}</span>
+            {% if role == 'admin' %}
+            <a href="{{ url_for('admin_users') }}" class="btn-admin" title="Gestión de Usuarios">👥 Usuarios</a>
+            <a href="{{ url_for('admin_urls') }}" class="btn-urls" title="Gestión de URLs">🌐 URLs</a>
+            <a href="{{ url_for('view_all_logs') }}" class="btn-logs" title="Ver todos los logs">📋 Logs</a>
+            {% endif %}
+            <button id="logout" class="btn-logout" onclick="logout()" title="Cerrar sesión">🔒 Salir</button>
+        </div>
+    </div>
+
+    <div class="info-bar" id="info-bar">
+        <span id="current-url-display">https://www.google.com</span>
+        <span class="separator">|</span>
+        <span id="ip-info">IP: <span id="ip-address">Cargando...</span></span>
+        <span class="separator">|</span>
+        <span id="ping-info">Ping: <span id="ping-value">-</span> ms</span>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <span>Cargando...</span>
+    </div>
+
+    <div class="error-message" id="error-message"></div>
+
+    <iframe id="browser-frame"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation allow-downloads allow-modals"
+            src="{{ url_for('proxy', url='https://www.google.com') }}"></iframe>
+
+    <script src="{{ url_for('static', filename='js/browser.js') }}"></script>
+</body>
+</html>

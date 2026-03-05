@@ -1,0 +1,723 @@
+/* ============================================
+   PROXY WEB - ESTILOS UNIFICADOS
+   ============================================ */
+
+/* Reset y variables globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #3498db;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --dark: #2c3e50;
+    --light: #ecf0f1;
+    --text: #333;
+    --text-light: #666;
+    --border: #e0e0e0;
+    --shadow: 0 5px 15px rgba(0,0,0,0.1);
+    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: #f5f7fa;
+    height: 100vh;
+    overflow: hidden;
+}
+*/
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    color: var(--text);
+    background: #f5f7fa;
+    height: 100vh;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* ============================================
+   TOOLBAR (común a todas las páginas)
+   ============================================ */
+.toolbar {
+    background: var(--gradient);
+    padding: 12px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+}
+
+.toolbar-left, .toolbar-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.toolbar a, .toolbar button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.toolbar a:hover, .toolbar button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.btn-nav { background: rgba(255,255,255,0.2); color: white; }
+.btn-nav:hover { background: rgba(255,255,255,0.3); }
+
+.btn-admin { background: var(--warning); color: white; }
+.btn-admin:hover { background: #e67e22; }
+
+.btn-logs { background: var(--primary); color: white; }
+.btn-logs:hover { background: #2980b9; }
+
+.btn-urls { background: var(--success); color: white; }
+.btn-urls:hover { background: #2ecc71; }
+
+.btn-logout { background: var(--danger); color: white; }
+.btn-logout:hover { background: #c0392b; }
+
+.user-info {
+    color: white;
+    padding: 8px 15px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ============================================
+   LAYOUT PRINCIPAL (scroll)
+   ============================================ */
+.page-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin-top: 60px;
+}
+
+.content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.card-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--light);
+}
+
+.card-header h2 {
+    color: var(--dark);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header .badge {
+    background: var(--primary);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.table th {
+    background: var(--dark);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+    background: white;
+}
+
+.table tr:hover td {
+    background: #f8f9fa;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.role-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.role-admin { background: var(--danger); color: white; }
+.role-user { background: var(--primary); color: white; }
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-success { background: #d4edda; color: #155724; }
+.status-error { background: #f8d7da; color: #721c24; }
+.status-blocked { background: #fff3cd; color: #856404; }
+
+.url-pattern {
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--danger);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #2ecc71; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(46,204,113,0.3); }
+
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #c0392b; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(192,57,43,0.3); }
+
+.btn-warning { background: var(--warning); color: white; }
+.btn-warning:hover { background: #e67e22; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(230,126,34,0.3); }
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: #2980b9; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(52,152,219,0.3); }
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.form-help {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.form-help ul {
+    margin: 10px 0 0 20px;
+    color: #666;
+}
+
+.form-help li {
+    margin: 5px 0;
+}
+
+/* ============================================
+   ALERTAS
+   ============================================ */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid transparent;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left-color: var(--success);
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left-color: var(--danger);
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left-color: var(--primary);
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+    margin: 0 0 20px 0;
+    color: var(--dark);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* ============================================
+   ESTADÍSTICAS
+   ============================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--dark);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* ============================================
+   NAVEGADOR (específico para browser.html)
+   ============================================ */
+.url-bar {
+    flex: 1;
+    display: flex;
+    gap: 5px;
+    max-width: 600px;
+}
+
+.url-bar input {
+    flex: 1;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.url-bar input:focus {
+    outline: 2px solid var(--primary);
+}
+
+.btn-go {
+    background: var(--success);
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-go:hover {
+    background: #2ecc71;
+}
+
+.btn-home {
+    background: var(--warning);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-home:hover {
+    background: #e67e22;
+}
+
+.info-bar {
+    background: var(--dark);
+    color: white;
+    padding: 8px 20px;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 13px;
+}
+
+#current-url-display {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--warning);
+    font-weight: 500;
+}
+/* ==================================================================
+Para cambiar el grosor y el color del marco:
+border: 5px solid var(--warning);
+=> var(--primary) - Azul
+=> var(--success) - Verde
+=> var(--danger) - Rojo
+=> var(--dark) - Gris oscuro
+==================================================================== */
+#browser-frame {
+    margin-top: 120px;
+    width: 100%;
+    height: calc(100vh - 120px);
+    border: 3px solid var(--warning);
+    border-radius: 8px 8px 0 0;
+    background: white;
+    box-shadow: 0 0 15px rgba(241,196,15,0.3);
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+#browser-frame:hover {
+    border-color: #e67e22;
+    box-shadow: 0 0 20px rgba(230,126,34,0.4);
+}
+
+.loading {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    z-index: 2000;
+    text-align: center;
+}
+
+.spinner {
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    display: none;
+    position: fixed;
+    top: 110px;
+    left: 20px;
+    right: 20px;
+    background: var(--danger);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1500;
+    text-align: center;
+}
+
+/* ============================================
+   LOGIN
+   ============================================ */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.login-box h2 {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    font-weight: normal;
+    margin-bottom: 30px;
+}
+
+.login-box .form-group {
+    margin-bottom: 20px;
+}
+
+.login-box label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.login-box input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-box button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.login-box .footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #777;
+    font-size: 14px;
+}
+
+.login-box .footer p {
+    margin: 5px 0;
+}
+
+.login-box .version {
+    color: #999;
+    font-size: 12px;
+    margin-top: 20px;
+}
+/* ============================================
+   SCROLL PERSONALIZADO
+   ============================================ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .toolbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .url-bar {
+        order: 3;
+        width: 100%;
+        max-width: none;
+    }
+
+    #browser-frame {
+        margin-top: 160px;
+        height: calc(100vh - 160px);
+        border-width: 2px;
+    }
+
+    .error-message {
+        top: 170px;
+    }
+
+    .info-bar {
+        top: 110px;
+        flex-wrap: wrap;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

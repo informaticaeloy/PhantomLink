@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error {{ error_code }} - Proxy Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>❌ Error {{ error_code }}</h1>
+            <h2>{{ error_message }}</h2>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                <p style="color: #666;">{{ error_details }}</p>
+            </div>
+
+            <div style="text-align: center; display: flex; gap: 10px; justify-content: center;">
+                <button onclick="history.back()" class="btn btn-primary" style="flex: 1;">
+                    ← Volver
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-success" style="flex: 1; text-decoration: none; color: white;">
+                    🏠 Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

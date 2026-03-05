@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs de {{ username }} - Proxy Web</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .logs-container {
+            margin-top: 70px;
+            padding: 20px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .user-header {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .user-details h2 {
+            margin: 0;
+            color: #333;
+        }
+        .user-details p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        .stat {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .filters {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .filters form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+            font-size: 12px;
+        }
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .logs-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .logs-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .logs-table th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .logs-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 13px;
+        }
+        .logs-table tr:hover {
+            background: #f8f9fa;
+        }
+        .status-success {
+            color: #27ae60;
+            font-weight: 500;
+        }
+        .status-error {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        .status-blocked {
+            color: #f39c12;
+            font-weight: 500;
+        }
+        .url-cell {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .url-cell a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .url-cell a:hover {
+            text-decoration: underline;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background: #e9ecef;
+        }
+        .empty-logs {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            background: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <a href="{{ url_for('admin_panel') }}" class="btn-nav">← Volver al Panel Admin</a>
+            <a href="{{ url_for('index') }}" class="btn-nav">🏠 Navegador</a>
+        </div>
+
+        <div class="toolbar-right">
+            <span class="user-info">👤 {{ admin_user }} (Admin)</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">🔒 Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="logs-container">
+        <div class="user-header">
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ username[0]|upper }}
+                </div>
+                <div class="user-details">
+                    <h2>Logs de navegación de {{ username }}</h2>
+                    <p>Rol: {{ user_info.role }} | Creado: {{ user_info.created_at[:10] if user_info.created_at else 'N/A' }} | Último acceso: {{ user_info.last_login[:10] if user_info.last_login else 'Nunca' }}</p>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">{{ logs|length }}</div>
+                    <div class="stat-label">Logs mostrados</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">{{ logs|selectattr('status', 'equalto', 'success')|list|length }}</div>
+                    <div class="stat-label">Exitosos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">{{ logs|selectattr('status', 'equalto', 'error')|list|length + logs|selectattr('status', 'equalto', 'blocked')|list|length }}</div>
+                    <div class="stat-label">Fallos</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <form method="GET">
+                <div class="filter-group">
+                    <label for="limit">Mostrar:</label>
+                    <select id="limit" name="limit">
+                        <option value="50" {% if limit == 50 %}selected{% endif %}>50 registros</option>
+                        <option value="100" {% if limit == 100 %}selected{% endif %}>100 registros</option>
+                        <option value="250" {% if limit == 250 %}selected{% endif %}>250 registros</option>
+                        <option value="500" {% if limit == 500 %}selected{% endif %}>500 registros</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="from_date">Desde:</label>
+                    <input type="date" id="from_date" name="from_date" value="{{ from_date if from_date else '' }}">
+                </div>
+                <div class="filter-group">
+                    <label for="to_date">Hasta:</label>
+                    <input type="date" id="to_date" name="to_date" value="{{ to_date if to_date else '' }}">
+                </div>
+                <div class="filter-group">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="actions">
+            <a href="{{ url_for('download_user_logs', username=username) }}" class="btn btn-success">📥 Descargar CSV</a>
+        </div>
+
+        {% if logs %}
+        <div class="logs-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>URL</th>
+                        <th>IP</th>
+                        <th>Estado</th>
+                        <th>Error</th>
+                        <th>User Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp[:19].replace('T', ' ') }}</td>
+                        <td class="url-cell">
+                            <a href="{{ url_for('proxy', url=log.url) }}" target="_blank">{{ log.url }}</a>
+                        </td>
+                        <td>{{ log.ip or 'N/A' }}</td>
+                        <td>
+                            {% if log.status == 'success' %}
+                            <span class="status-success">✓ Éxito</span>
+                            {% elif log.status == 'blocked' %}
+                            <span class="status-blocked">⚠ Bloqueado</span>
+                            {% else %}
+                            <span class="status-error">✗ Error</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.error or '-' }}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ log.user_agent }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <a href="?limit={{ limit }}&from_date={{ from_date or '' }}&to_date={{ to_date or '' }}&page=1">« Primera</a>
+            <a href="?limit={{ limit }}&from_date={{ from_date or '' }}&to_date={{ to_date or '' }}&page={{ request.args.get('page', 1)|int - 1 }}">‹ Anterior</a>
+            <span>Página {{ request.args.get('page', 1) }}</span>
+            <a href="?limit={{ limit }}&from_date={{ from_date or '' }}&to_date={{ to_date or '' }}&page={{ request.args.get('page', 1)|int + 1 }}">Siguiente ›</a>
+            <a href="?limit={{ limit }}&from_date={{ from_date or '' }}&to_date={{ to_date or '' }}&page=999">Última »</a>
+        </div>
+        {% else %}
+        <div class="empty-logs">
+            <h3>No hay logs disponibles</h3>
+            <p>Este usuario aún no ha realizado navegaciones o no hay logs en el período seleccionado.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

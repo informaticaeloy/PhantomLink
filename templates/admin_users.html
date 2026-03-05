@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Web - Gestión de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <a href="{{ url_for('index') }}" class="btn-nav">← Volver al Navegador</a>
+            <a href="{{ url_for('admin_urls') }}" class="btn-urls">🌐 Gestión de URLs</a>
+            <a href="{{ url_for('view_all_logs') }}" class="btn-logs">📋 Ver Logs</a>
+        </div>
+
+        <div class="toolbar-right">
+            <span class="user-info">👤 {{ username }} (Admin)</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">🔒 Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="content-scroll">
+            <div class="content-wrapper">
+
+                <!-- Mensajes flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Lista de usuarios -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>👥 Usuarios del Sistema <span class="badge">{{ users|length }}</span></h2>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Último Acceso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for username, data in users.items() %}
+                                <tr>
+                                    <td><strong>{{ username }}</strong></td>
+                                    <td>
+                                        <span class="role-badge {% if data.role == 'admin' %}role-admin{% else %}role-user{% endif %}">
+                                            {{ 'Administrador' if data.role == 'admin' else 'Usuario' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if data.created_at %}
+                                            {{ data.created_at[:19].replace('T', ' ') }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if data.last_login %}
+                                            {{ data.last_login[:19].replace('T', ' ') }}
+                                        {% else %}
+                                            Nunca
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-warning btn-sm" onclick="showPasswordModal('{{ username }}')">🔑 Cambiar Contraseña</button>
+                                        {% if username != 'admin' %}
+                                        <a href="{{ url_for('delete_user', username=username) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar al usuario {{ username }}?')">🗑️ Eliminar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Añadir usuario -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>➕ Añadir Nuevo Usuario</h2>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('add_user') }}">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="username">Usuario:</label>
+                                <input type="text" id="username" name="username" required placeholder="ej: nuevo_usuario">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Contraseña:</label>
+                                <input type="password" id="password" name="password" required minlength="6" placeholder="Mínimo 6 caracteres">
+                                <small>Mínimo 6 caracteres</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="role">Rol:</label>
+                                <select id="role" name="role">
+                                    <option value="user">Usuario</option>
+                                    <option value="admin">Administrador</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="display: flex; align-items: flex-end;">
+                                <button type="submit" class="btn btn-success">➕ Crear Usuario</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📊 Estadísticas de Usuarios</h2>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ total_users }}</div>
+                            <div class="stat-label">Total Usuarios</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-value">{{ admin_count }}</div>
+                            <div class="stat-label">Administradores</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-value">{{ user_count }}</div>
+                            <div class="stat-label">Usuarios</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-value">{{ active_users }}</div>
+                            <div class="stat-label">Activos</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal cambiar contraseña -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h3>🔑 Cambiar Contraseña</h3>
+            <form method="POST" action="" id="passwordForm">
+                <div class="form-group">
+                    <label for="new_password">Nueva Contraseña:</label>
+                    <input type="password" id="new_password" name="new_password" required minlength="6">
+                    <small>Mínimo 6 caracteres</small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success">Actualizar</button>
+                    <button type="button" class="btn btn-danger" onclick="hidePasswordModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showPasswordModal(username) {
+            document.getElementById('passwordForm').action = '/admin/change_password/' + username;
+            document.getElementById('passwordModal').classList.add('active');
+        }
+
+        function hidePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById('passwordModal');
+            if (event.target == modal) {
+                modal.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

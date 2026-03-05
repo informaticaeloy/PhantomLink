@@ -1,0 +1,15 @@
+pattern,allowed,description,created_at
+google.com,true,Buscador Google,2026-02-26 15:35:10
+*.google.com,true,Todos los subdominios de Google,2026-02-26 15:35:22
+github.com,true,Repositorios GitHub,2026-02-26 15:36:05
+*.github.com,true,Subdominios de GitHub,2026-02-26 15:36:18
+stackoverflow.com,true,Foro Stack Overflow,2026-02-26 15:37:02
+*.stackoverflow.com,true,Todos los subdominios Stack Overflow,2026-02-26 15:37:15
+python.org,true,Sitio oficial de Python,2026-02-26 15:38:30
+*.python.org,true,Subdominios de Python,2026-02-26 15:38:45
+*.edu,true,Instituciones educativas,2026-02-26 15:40:05
+*.gov,true,Sitios gubernamentales,2026-02-26 15:40:18
+*.org,true,Organizaciones sin ánimo de lucro,2026-02-26 15:40:32
+*.fpvirtualaragon.es,true,URL permitida: *.fpvirtualaragon.es,2026-02-26 17:38:29
+fpvirtualaragon.es,true,URL permitida: fpvirtualaragon.es,2026-02-26 17:38:34
+*.example.com,true,URL permitida: *.example.com,2026-03-02 07:44:39

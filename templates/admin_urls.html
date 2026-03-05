@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Web - Gestión de URLs Permitidas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <a href="{{ url_for('index') }}" class="btn-nav">← Volver al Navegador</a>
+            <a href="{{ url_for('admin_users') }}" class="btn-admin">👥 Gestión de Usuarios</a>
+            <a href="{{ url_for('view_all_logs') }}" class="btn-logs">📋 Ver Logs</a>
+        </div>
+
+        <div class="toolbar-right">
+            <span class="user-info">👤 {{ username }} (Admin)</span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">🔒 Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <div class="content-scroll">
+            <div class="content-wrapper">
+
+                <!-- Mensajes flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Lista de URLs permitidas -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🌐 URLs y Dominios Permitidos <span class="badge">{{ allowed_urls|length }}</span></h2>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patrón</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for url in allowed_urls %}
+                                <tr>
+                                    <td><code class="url-pattern">{{ url.pattern }}</code></td>
+                                    <td>{{ url.description }}</td>
+                                    <td>
+                                        {% if url.created_at %}
+                                            {{ url.created_at[:19].replace('T', ' ') }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if allowed_urls|length > 1 %}
+                                        <a href="{{ url_for('delete_url', pattern=url.pattern) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar {{ url.pattern }}?')">🗑️ Eliminar</a>
+                                        {% else %}
+                                        <span class="btn btn-danger btn-sm" style="opacity: 0.5; cursor: not-allowed;" title="No se puede eliminar la última URL">🗑️ Eliminar</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <a href="{{ url_for('reset_default_urls') }}" class="btn btn-warning" onclick="return confirm('¿Restablecer URLs por defecto?')">🔄 Restablecer URLs por defecto</a>
+                    </div>
+                </div>
+
+                <!-- Añadir URL -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>➕ Añadir Nueva URL Permitida</h2>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('add_url') }}">
+                        <div class="form-group">
+                            <label for="pattern">Patrón de URL:</label>
+                            <input type="text" id="pattern" name="pattern" required
+                                   placeholder="ej: google.com, *.google.com, https://github.com">
+                            <div class="form-help">
+                                <strong>📝 Formatos aceptados:</strong>
+                                <ul>
+                                    <li><code>google.com</code> - Dominio exacto</li>
+                                    <li><code>*.google.com</code> - Todos los subdominios</li>
+                                    <li><code>https://github.com</code> - URL completa</li>
+                                    <li><code>maps.google.com</code> - Subdominio específico</li>
+                                    <li><code>*.edu</code> - Todos los .edu</li>
+                                    <li><code>*.gov</code> - Todos los .gov</li>
+                                </ul>
+                                <p style="margin-top: 10px; color: #666;">✅ El sistema normalizará automáticamente el formato.</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Descripción (opcional):</label>
+                            <input type="text" id="description" name="description"
+                                   placeholder="ej: Todos los servicios de Google">
+                        </div>
+
+                        <button type="submit" class="btn btn-success">➕ Añadir URL</button>
+                    </form>
+                </div>
+
+                <!-- Estadísticas - Versión simplificada sin filtros problemáticos -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📊 Estadísticas de URLs</h2>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ allowed_urls|length }}</div>
+                            <div class="stat-label">Total URLs</div>
+                        </div>
+
+                        <!-- Calculamos estos valores en Python y los pasamos al template -->
+                        <div class="stat-card">
+                            <div class="stat-value">{{ wildcard_count }}</div>
+                            <div class="stat-label">Con Wildcard</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-value">{{ exact_count }}</div>
+                            <div class="stat-label">Dominios Exactos</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-value">✓</div>
+                            <div class="stat-label">Sistema Activo</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
