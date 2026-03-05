@@ -3,64 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todos los Logs - Proxy Web</title>
+    <title>📋 Panel de Logs - PhantomLink</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Estilos específicos para logs */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f94144;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --border: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #f94144 0%, #d9042b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 65, 68, 0.3);
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(249, 65, 68, 0.4);
+        }
+
+        .user-info {
+            color: var(--dark);
+            padding: 8px 16px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        /* Contenedor principal */
+        .logs-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header */
+        .logs-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .btn-go {
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-go:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: #f8f9fa;
+        }
+
+        /* Filtros */
+        .logs-filters {
+            padding: 20px 30px;
+            background: #f8fafd;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filters-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .filter-group:last-child {
+            flex: 0 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Tabla */
+        .logs-table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .logs-table th {
+            background: #f8fafd;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .logs-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #4a5568;
+        }
+
+        .logs-table tr:hover {
+            background: #f8fafd;
+        }
+
+        .url-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .url-cell a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .url-cell a:hover {
+            text-decoration: underline;
+        }
+
+        .user-badge {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .user-admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .user-user {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .status-success {
+            color: #2b8c3e;
+            background: #e6f7e6;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-error {
+            color: #c92a2a;
+            background: #ffe9e9;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-blocked {
+            color: #e67700;
+            background: #fff3e0;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .user-agent-cell {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #868e96;
+            font-size: 12px;
+        }
+
+        /* Paginación */
+        .pagination {
+            padding: 20px 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination a {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .pagination a:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .current {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-logs {
+            text-align: center;
+            padding: 60px 20px;
+            color: #868e96;
+        }
+
+        .empty-logs h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+    </style>
 </head>
 <body>
     <div class="toolbar">
         <div class="toolbar-left">
-            <a href="{{ url_for('index') }}" class="btn-nav">← Volver al Navegador</a>
-            <a href="{{ url_for('admin_panel') }}" class="btn-nav">⚙️ Admin</a>
+            <a href="{{ url_for('index') }}" class="btn-nav">
+                <span>←</span> Volver al Navegador
+            </a>
+            <a href="{{ url_for('admin_panel') }}" class="btn-nav">
+                <span>⚙️</span> Panel Admin
+            </a>
         </div>
         
         <div class="toolbar-right">
-            <span class="user-info">👤 {{ username }} (Admin)</span>
-            <a href="{{ url_for('logout') }}" class="btn-logout">🔒 Cerrar sesión</a>
+            <span class="user-info">
+                <span>👤</span> {{ username }} <span style="opacity:0.7; font-weight:400;">(Administrador)</span>
+            </span>
+            <a href="{{ url_for('logout') }}" class="btn-logout">
+                <span>🔒</span> Cerrar sesión
+            </a>
         </div>
     </div>
     
     <div class="logs-container">
         <div class="logs-header">
             <div class="header-title">
-                <h1>📋 Todos los Logs de Navegación</h1>
-                <p>Mostrando {{ logs|length }} registros de {{ total_logs }} totales</p>
+                <h1>
+                    <span>📋</span> Panel de Logs
+                </h1>
+                <p>Mostrando {{ logs|length }} registros de {{ total_logs }} totales • 
+                   {% if request.args.get('user') %}Filtrado por: {{ request.args.get('user') }}{% endif %}
+                </p>
             </div>
             <div class="header-actions">
-                <a href="{{ url_for('export_all_logs') }}" class="btn-go">📥 Exportar todos los logs</a>
+                <a href="{{ url_for('export_all_logs') }}" class="btn-go">
+                    <span>📥</span> Exportar CSV
+                </a>
             </div>
         </div>
-        
+
         <div class="logs-filters">
             <form method="GET" class="filters-form">
                 <div class="filter-group">
-                    <label for="user">Usuario:</label>
-                    <select id="user" name="user">
+                    <label>👤 Usuario</label>
+                    <select name="user">
                         <option value="">Todos los usuarios</option>
                         {% for user in users %}
-                        <option value="{{ user }}" {% if request.args.get('user') == user %}selected{% endif %}>{{ user }}</option>
+                        <option value="{{ user }}" {% if request.args.get('user') == user %}selected{% endif %}>
+                            {{ user }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
+                
                 <div class="filter-group">
-                    <label for="status">Estado:</label>
-                    <select id="status" name="status">
+                    <label>📊 Estado</label>
+                    <select name="status">
                         <option value="">Todos los estados</option>
-                        <option value="success" {% if request.args.get('status') == 'success' %}selected{% endif %}>Éxito</option>
-                        <option value="error" {% if request.args.get('status') == 'error' %}selected{% endif %}>Error</option>
-                        <option value="blocked" {% if request.args.get('status') == 'blocked' %}selected{% endif %}>Bloqueado</option>
+                        <option value="success" {% if request.args.get('status') == 'success' %}selected{% endif %}>✓ Éxito</option>
+                        <option value="error" {% if request.args.get('status') == 'error' %}selected{% endif %}>✗ Error</option>
+                        <option value="blocked" {% if request.args.get('status') == 'blocked' %}selected{% endif %}>⚠ Bloqueado</option>
                     </select>
                 </div>
+                
                 <div class="filter-group">
-                    <label for="from_date">Desde:</label>
-                    <input type="date" id="from_date" name="from_date" value="{{ request.args.get('from_date', '') }}">
+                    <label>📅 Desde</label>
+                    <input type="date" name="from_date" value="{{ request.args.get('from_date', '') }}">
                 </div>
+                
                 <div class="filter-group">
-                    <label for="to_date">Hasta:</label>
-                    <input type="date" id="to_date" name="to_date" value="{{ request.args.get('to_date', '') }}">
+                    <label>📅 Hasta</label>
+                    <input type="date" name="to_date" value="{{ request.args.get('to_date', '') }}">
                 </div>
+                
                 <div class="filter-group">
-                    <label for="limit">Mostrar:</label>
-                    <select id="limit" name="limit">
+                    <label>📏 Mostrar</label>
+                    <select name="limit">
                         <option value="50" {% if request.args.get('limit', '100') == '50' %}selected{% endif %}>50 registros</option>
                         <option value="100" {% if request.args.get('limit', '100') == '100' %}selected{% endif %}>100 registros</option>
                         <option value="250" {% if request.args.get('limit', '100') == '250' %}selected{% endif %}>250 registros</option>
@@ -68,13 +459,14 @@
                         <option value="1000" {% if request.args.get('limit', '100') == '1000' %}selected{% endif %}>1000 registros</option>
                     </select>
                 </div>
+                
                 <div class="filter-group">
                     <button type="submit" class="btn-go">Aplicar filtros</button>
-                    <a href="{{ url_for('view_all_logs') }}" class="btn-nav">Limpiar filtros</a>
+                    <a href="{{ url_for('view_all_logs') }}" class="btn-nav">Limpiar</a>
                 </div>
             </form>
         </div>
-        
+
         <div class="logs-table-container">
             {% if logs %}
             <table class="logs-table">
@@ -99,9 +491,11 @@
                             </span>
                         </td>
                         <td class="url-cell">
-                            <a href="{{ url_for('proxy', url=log.url) }}" target="_blank" title="{{ log.url }}">{{ log.url }}</a>
+                            <a href="{{ url_for('proxy', url=log.url) }}" target="_blank" title="{{ log.url }}">
+                                {{ log.url }}
+                            </a>
                         </td>
-                        <td>{{ log.ip or 'N/A' }}</td>
+                        <td>{{ log.ip or '—' }}</td>
                         <td>
                             {% if log.status == 'success' %}
                             <span class="status-success">✓ Éxito</span>
@@ -111,8 +505,10 @@
                             <span class="status-error">✗ Error</span>
                             {% endif %}
                         </td>
-                        <td>{{ log.error or '-' }}</td>
-                        <td class="user-agent-cell" title="{{ log.user_agent }}">{{ log.user_agent|truncate(50) }}</td>
+                        <td>{{ log.error or '—' }}</td>
+                        <td class="user-agent-cell" title="{{ log.user_agent }}">
+                            {{ log.user_agent|truncate(50) }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -124,21 +520,20 @@
             </div>
             {% endif %}
         </div>
-        
+
         <div class="pagination">
             {% if page > 1 %}
-            <a href="?page=1&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">« Primera</a>
-            <a href="?page={{ page-1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">‹ Anterior</a>
+            <a href="?page=1&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">«</a>
+            <a href="?page={{ page-1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">‹</a>
             {% endif %}
             
             <span class="current">Página {{ page }} de {{ total_pages }}</span>
             
             {% if page < total_pages %}
-            <a href="?page={{ page+1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">Siguiente ›</a>
-            <a href="?page={{ total_pages }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}" class="btn-nav">Última »</a>
+            <a href="?page={{ page+1 }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">›</a>
+            <a href="?page={{ total_pages }}&user={{ request.args.get('user', '') }}&status={{ request.args.get('status', '') }}&from_date={{ request.args.get('from_date', '') }}&to_date={{ request.args.get('to_date', '') }}&limit={{ request.args.get('limit', '100') }}">»</a>
             {% endif %}
         </div>
     </div>
 </body>
 </html>
-
