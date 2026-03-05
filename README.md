@@ -127,7 +127,7 @@ Todas las peticiones pasan por el proxy y son opcionalmente registradas para an√
 
 Clona el repositorio:
 
-    git clone https://github.com/YOUR_USERNAME/phantomlink.git
+    git clone https://github.com/informaticaeloy/phantomlink.git
     cd phantomlink
 
 Crea un entorno virtual:
