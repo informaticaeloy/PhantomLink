@@ -21,16 +21,20 @@ PhantomLink proporciona un entorno de navegación web controlado diseñado para 
 
 <img width="400" height="400" alt="PhantomLink_logo" src="https://github.com/user-attachments/assets/130347ab-8e86-418d-8610-3d37fa8b1d6d" />
 
-# Capturas de Pantalla
+# Screenshots
+
+## Pantalla principal
+<img width="1898" height="930" alt="image" src="https://github.com/user-attachments/assets/9839af68-d9d3-4108-b8eb-03325ee42380" />
 
 ## Configuración de Usuarios
-[INSERTAR CAPTURA DE PANTALLA DE LA CONFIGURACIÓN DE USUARIOS AQUÍ]
+<img width="1901" height="917" alt="image" src="https://github.com/user-attachments/assets/5da70807-22c7-4084-8516-ae1d9bdd45b6" />
 
 ## Configuración de URLs Permitidas
-[INSERTAR CAPTURA DE PANTALLA DE LA CONFIGURACIÓN DE URLs PERMITIDAS AQUÍ]
+<img width="1906" height="666" alt="image" src="https://github.com/user-attachments/assets/7c85cb75-30df-4191-a202-9769fc89127f" />
+<img width="1894" height="788" alt="image" src="https://github.com/user-attachments/assets/aff30873-610e-4368-8e7e-7d7d7781529b" />
 
 ## Logs del Sistema
-[INSERTAR CAPTURA DE PANTALLA DE LOS LOGS DEL SISTEMA AQUÍ]
+Pendiente de añadir
 
 # Usuarios por Defecto
 
